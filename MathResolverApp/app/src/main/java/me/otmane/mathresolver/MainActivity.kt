@@ -1,7 +1,9 @@
 package me.otmane.mathresolver
 
+import android.Manifest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import me.otmane.mathresolver.databinding.MainActivityBinding
 import me.otmane.mathresolver.ui.main.MainFragment
 
