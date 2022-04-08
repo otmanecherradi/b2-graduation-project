@@ -15,6 +15,8 @@ import androidx.camera.core.impl.utils.ContextUtil
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import me.otmane.mathresolver.databinding.FragmentCameraBinding
 import java.io.File
 import java.lang.Exception
 import java.text.SimpleDateFormat
@@ -27,24 +29,20 @@ class CameraFragment : Fragment() {
     private var imageCapture : ImageCapture? = null
     private var camera : Camera? = null
 
-    private var imageAnalyzer : ImageAnalysis? =  null
+    //private var imageAnalyzer : ImageAnalysis? =  null
+    //private lateinit var outputDirectory : File
+    //private lateinit var cameraExecutor: ExecutorService
 
-    private lateinit var outputDirectory : File
-    private lateinit var cameraExecutor: ExecutorService
-
-    val btn_take_photo = view?.findViewById(R.id.btn_take_photo) as Button
-    val camera_view = view?.findViewById(R.id.camera_view) as Camera
+    private var _binding: FragmentCameraBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PERMISSION_GRANTED){
+        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PERMISSION_GRANTED){
             startCamera()
         }else{
-            ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.CAMERA),0)
-        }
-        btn_take_photo.setOnClickListener{
-            takePhoto()
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA),0)
         }
     }
 
@@ -53,27 +51,27 @@ class CameraFragment : Fragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PERMISSION_GRANTED){
+        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PERMISSION_GRANTED){
             startCamera()
-        }else Toast.makeText(this,"Please accept the permission", Toast.LENGTH_LONG)
+        }else Toast.makeText(context,"Please accept the permission", Toast.LENGTH_LONG)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_camera, container, false)
+        _binding = FragmentCameraBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     private fun startCamera(){
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
         cameraProviderFuture.addListener(Runnable {
             val cameraProvider = cameraProviderFuture.get()
 
             preview = Preview.Builder().build()
-            preview?.setSurfaceProvider(camera_view.createSurfaceProvider(camera?.cameraInfo))
+            preview?.setSurfaceProvider(binding.cameraView.createSurfaceProvider(camera?.cameraInfo))
             imageCapture = ImageCapture.Builder().build()
             val cameraSelector =
                 CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
@@ -81,17 +79,17 @@ class CameraFragment : Fragment() {
 
             camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
 
-        }, ContextCompat.getMainExecutor(this))
+        }, ContextCompat.getMainExecutor(requireContext()))
     }
 
     private fun takePhoto(){
-        //val photoFile = File(outputDirectory, SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())+".jpg")
+        /*val photoFile = File(outputDirectory, SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())+".jpg")
         val photoFile = File(externalMediaDirs.firstOrNull(), "CameraApp - ${System.currentTimeMillis()}.jpg")
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
         imageCapture?.takePicture(outputOptions,ContextCompat.getMainExecutor(this, object:ImageCapture.OnImageCapturedCallback{}))
-    }
+    */}
 
     /*companion object{
         private const val TAG = "CameraX"
