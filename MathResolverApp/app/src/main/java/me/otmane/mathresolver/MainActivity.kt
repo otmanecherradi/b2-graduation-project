@@ -1,13 +1,21 @@
 package me.otmane.mathresolver
 
-import android.Manifest
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
 import android.os.Bundle
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI.navigateUp
+import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import me.otmane.mathresolver.databinding.MainActivityBinding
-import me.otmane.mathresolver.ui.main.MainFragment
+import java.io.File
+
 
 class MainActivity : AppCompatActivity() {
+
+    private var appBarConfiguration: AppBarConfiguration? = null
 
     private lateinit var binding: MainActivityBinding
 
@@ -15,12 +23,33 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = MainActivityBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, MainFragment.newInstance())
-                .commitNow()
+
+        val navHostFragment =
+            (supportFragmentManager.findFragmentById(R.id.main_nav_container) as NavHostFragment?)!!
+        val navController = navHostFragment.navController
+
+        appBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
+
+        setupActionBarWithNavController(this, navController, appBarConfiguration!!)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController: NavController =
+            Navigation.findNavController(this, R.id.main_nav_container)
+        return (navigateUp(navController, appBarConfiguration!!)
+                || super.onSupportNavigateUp())
+    }
+
+    companion object {
+        const val TAG = "MainActivity"
+
+        fun getOutputDirectory(context: Context): File {
+            val appContext = context.applicationContext
+            val mediaDir = context.externalMediaDirs.firstOrNull()?.let {
+                File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() } }
+            return if (mediaDir != null && mediaDir.exists())
+                mediaDir else appContext.filesDir
         }
     }
 }

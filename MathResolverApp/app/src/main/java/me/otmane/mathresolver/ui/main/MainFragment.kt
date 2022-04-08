@@ -1,24 +1,22 @@
 package me.otmane.mathresolver.ui.main
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import me.otmane.mathresolver.CameraFragment
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import me.otmane.mathresolver.R
 import me.otmane.mathresolver.databinding.MainFragmentBinding
 
+
 class MainFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = MainFragment()
-    }
-
     private var _binding: MainFragmentBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var navController: NavController
 
     private lateinit var viewModel: MainViewModel
 
@@ -27,15 +25,8 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = MainFragmentBinding.inflate(inflater, container, false)
+        navController = NavHostFragment.findNavController(this);
 
-        //--------- set button to show CameraFragment ---------
-        val btn_camera : Button = binding.root.findViewById(R.id.btn_camera)
-        btn_camera.setOnClickListener {
-            val fragment = CameraFragment() //navigate to camera fragment
-            val transaction = fragmentManager?.beginTransaction()
-                ?.replace(R.id.camera_view, fragment)
-                ?.commit()
-        }
         return binding.root
     }
 
@@ -43,10 +34,21 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+        binding.btnCamera.setOnClickListener {
+            navController.navigate(GOTO_CAMERA_FRAGMENT)
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        const val TAG = "MenuFragment"
+        fun newInstance() = MainFragment()
+
+        private const val GOTO_CAMERA_FRAGMENT = R.id.action_main_fragment_to_camera_fragment
     }
 }
