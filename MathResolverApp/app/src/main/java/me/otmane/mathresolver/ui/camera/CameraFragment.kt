@@ -19,6 +19,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import me.otmane.mathresolver.MainActivity
 import me.otmane.mathresolver.databinding.CameraFragmentBinding
 import java.io.File
@@ -93,16 +97,13 @@ class CameraFragment : Fragment() {
     }
 
     private fun takePhoto() {
-        // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
         val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
 
-        // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
             .build()
 
-        // Setup image capture listener which is triggered after photo has been taken
         imageCapture.takePicture(
             outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
@@ -111,8 +112,12 @@ class CameraFragment : Fragment() {
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
+
+                    val image = InputImage.fromFilePath(requireContext(), output.savedUri!!)
+
+                    recognizeText(image)
+
                 }
             }
         )
@@ -140,6 +145,56 @@ class CameraFragment : Fragment() {
             }
         }
     }
+
+    private fun recognizeText(image: InputImage) {
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
+        val result = recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                processTextBlock(visionText)
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, e.toString())
+                Toast.makeText(requireActivity(), e.toString(), Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun processTextBlock(result: Text) {
+        val resultText = result.text
+        Log.d(TAG, "resultText $resultText")
+        Toast.makeText(requireActivity(), "resultText $resultText", Toast.LENGTH_SHORT).show()
+
+        for (block in result.textBlocks) {
+            val blockText = block.text
+            val blockCornerPoints = block.cornerPoints
+            val blockFrame = block.boundingBox
+
+            Log.d(TAG, "blockText $blockText")
+            Log.d(TAG, "blockCornerPoints ${blockCornerPoints.toString()}")
+            Log.d(TAG, "blockFrame ${blockFrame.toString()}")
+
+            Toast.makeText(requireActivity(), "blockText $blockText", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "blockCornerPoints ${blockCornerPoints.toString()}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "blockFrame ${blockFrame.toString()}", Toast.LENGTH_SHORT).show()
+
+//            for (line in block.lines) {
+//                val lineText = line.text
+//                val lineCornerPoints = line.cornerPoints
+//                val lineFrame = line.boundingBox
+//
+//                for (element in line.elements) {
+//                    val elementText = element.text
+//                    val elementCornerPoints = element.cornerPoints
+//                    val elementFrame = element.boundingBox
+//
+//                    Log.d(TAG, elementText)
+//                    Log.d(TAG, elementCornerPoints.toString())
+//                    Log.d(TAG, elementFrame.toString())
+//                }
+//            }
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -7,17 +7,15 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI.navigateUp
-import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
+import androidx.navigation.ui.NavigationUI
 import me.otmane.mathresolver.databinding.MainActivityBinding
 import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
-
-    private var appBarConfiguration: AppBarConfiguration? = null
-
     private lateinit var binding: MainActivityBinding
+
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,13 +29,14 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
 
-        setupActionBarWithNavController(this, navController, appBarConfiguration!!)
+        NavigationUI.setupActionBarWithNavController(
+            this, navController, appBarConfiguration)
     }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController: NavController =
             Navigation.findNavController(this, R.id.main_nav_container)
-        return (navigateUp(navController, appBarConfiguration!!)
+        return (NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp())
     }
 
