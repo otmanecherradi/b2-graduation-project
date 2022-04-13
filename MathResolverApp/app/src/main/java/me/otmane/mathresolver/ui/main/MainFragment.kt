@@ -26,7 +26,7 @@ class MainFragment : Fragment() {
     ): View {
         _binding = MainFragmentBinding.inflate(inflater, container, false)
         navController = NavHostFragment.findNavController(this);
-
+        binding.btnCamera
         return binding.root
     }
 

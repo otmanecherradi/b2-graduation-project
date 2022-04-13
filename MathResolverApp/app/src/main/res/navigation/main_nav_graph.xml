@@ -19,6 +19,15 @@
         android:id="@+id/camera_fragment"
         android:name="me.otmane.mathresolver.ui.camera.CameraFragment"
         android:label="camera_fragment"
-        tools:layout="@layout/camera_fragment" />
+        tools:layout="@layout/camera_fragment" >
+        <action
+            android:id="@+id/action_camera_fragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="me.otmane.mathresolver.ResultFragment"
+        android:label="fragment_result"
+        tools:layout="@layout/fragment_result" />
 
 </navigation>

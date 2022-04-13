@@ -24,6 +24,8 @@ import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import me.otmane.mathresolver.MainActivity
+import me.otmane.mathresolver.R
+import me.otmane.mathresolver.ResultFragment
 import me.otmane.mathresolver.databinding.CameraFragmentBinding
 import java.io.File
 import java.text.SimpleDateFormat
@@ -151,12 +153,41 @@ class CameraFragment : Fragment() {
 
         val result = recognizer.process(image)
             .addOnSuccessListener { visionText ->
-                processTextBlock(visionText)
+               // processTextBlock(visionText)
+                val text = visionText.text
+               // equation(text)
+                val bundle = Bundle()
+                bundle.putString("Results", equation(text))
+                val fragment = ResultFragment()
+                fragment.arguments = bundle
+                fragmentManager?.beginTransaction()?.replace(R.id.main_nav_container, fragment)?.commit()
+
+
+
+
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, e.toString())
                 Toast.makeText(requireActivity(), e.toString(), Toast.LENGTH_SHORT).show()
             }
+    }
+    fun equation(eq: String) : String {
+        val regex = """(\d+.?\d+|\d)(\+|-|x|×|÷|/)(\d+.?\d+|\d)""".toRegex()
+        val (d1, d2, d3) = regex.find(eq)!!.destructured
+        var result : Double = 0.0
+        if(d2 == "+") {
+            result = d1.toDouble() + d3.toDouble()
+        }
+        else if(d2 == "-"){
+            result = d1.toDouble() - d3.toDouble()
+        }
+        else if(d2 == "×" || d2 == "x"){
+            result = d1.toDouble() * d3.toDouble()
+        }
+        else if(d2 == "/" || d2 == "÷" && d3!= "0"){
+            result = d1.toDouble() / d3.toDouble()
+        }
+        return "Equation : $d1 $d2 $d3 = $result"
     }
 
     private fun processTextBlock(result: Text) {
