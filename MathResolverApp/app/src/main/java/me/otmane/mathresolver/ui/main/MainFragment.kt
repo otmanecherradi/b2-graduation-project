@@ -27,6 +27,8 @@ class MainFragment : Fragment() {
         _binding = MainFragmentBinding.inflate(inflater, container, false)
         navController = NavHostFragment.findNavController(this);
         binding.btnCamera
+        binding.btnMic
+
         return binding.root
     }
 
@@ -35,8 +37,14 @@ class MainFragment : Fragment() {
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
+        //to open camera fragment
         binding.btnCamera.setOnClickListener {
             navController.navigate(GOTO_CAMERA_FRAGMENT)
+        }
+
+        //to open mic fragment
+        binding.btnMic.setOnClickListener{
+            navController.navigate(GOTO_MIC_FRAGMENT)
         }
     }
 
@@ -50,5 +58,6 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
 
         private const val GOTO_CAMERA_FRAGMENT = R.id.action_main_fragment_to_camera_fragment
+        private const val GOTO_MIC_FRAGMENT = R.id.action_main_fragment_to_micFragment
     }
 }

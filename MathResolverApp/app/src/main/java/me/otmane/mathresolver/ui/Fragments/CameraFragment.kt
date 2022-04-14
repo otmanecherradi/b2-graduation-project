@@ -1,4 +1,4 @@
-package me.otmane.mathresolver.ui.camera
+package me.otmane.mathresolver.ui.Fragments
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -25,7 +25,6 @@ import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import me.otmane.mathresolver.MainActivity
 import me.otmane.mathresolver.R
-import me.otmane.mathresolver.ResultFragment
 import me.otmane.mathresolver.databinding.CameraFragmentBinding
 import java.io.File
 import java.text.SimpleDateFormat
@@ -161,18 +160,15 @@ class CameraFragment : Fragment() {
                 val fragment = ResultFragment()
                 fragment.arguments = bundle
                 fragmentManager?.beginTransaction()?.replace(R.id.main_nav_container, fragment)?.commit()
-
-
-
-
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, e.toString())
                 Toast.makeText(requireActivity(), e.toString(), Toast.LENGTH_SHORT).show()
             }
     }
+
     fun equation(eq: String) : String {
-        val regex = """(\d+.?\d+|\d)(\+|-|x|×|÷|/)(\d+.?\d+|\d)""".toRegex()
+        val regex = """(\d+.?\d+)(\+|-|x|×|÷|/)(\d+.?\d+)""".toRegex()
         val (d1, d2, d3) = regex.find(eq)!!.destructured
         var result : Double = 0.0
         if(d2 == "+") {

@@ -13,11 +13,14 @@
         <action
             android:id="@+id/action_main_fragment_to_camera_fragment"
             app:destination="@id/camera_fragment" />
+        <action
+            android:id="@+id/action_main_fragment_to_micFragment"
+            app:destination="@id/micFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/camera_fragment"
-        android:name="me.otmane.mathresolver.ui.camera.CameraFragment"
+        android:name="me.otmane.mathresolver.ui.Fragments.CameraFragment"
         android:label="camera_fragment"
         tools:layout="@layout/camera_fragment" >
         <action
@@ -26,8 +29,13 @@
     </fragment>
     <fragment
         android:id="@+id/resultFragment"
-        android:name="me.otmane.mathresolver.ResultFragment"
+        android:name="me.otmane.mathresolver.ui.Fragments.ResultFragment"
         android:label="fragment_result"
         tools:layout="@layout/fragment_result" />
+    <fragment
+        android:id="@+id/micFragment"
+        android:name="me.otmane.mathresolver.ui.Fragments.MicFragment"
+        android:label="mic_fragment"
+        tools:layout="@layout/mic_fragment" />
 
 </navigation>
