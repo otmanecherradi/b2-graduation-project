@@ -5,12 +5,15 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import me.otmane.mathresolver.R
 import me.otmane.mathresolver.databinding.CameraFragmentBinding
 import me.otmane.mathresolver.databinding.MicFragmentBinding
@@ -30,6 +33,7 @@ class MicFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = MicFragmentBinding.inflate(inflater, container, false)
+        navController = NavHostFragment.findNavController(this);
 
         return binding.root
     }
@@ -66,6 +70,8 @@ class MicFragment : Fragment() {
     /*
     * Displaying the dialog input (Words)
     * */
+    private lateinit var navController: NavController
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -73,19 +79,20 @@ class MicFragment : Fragment() {
 
             REQ_CODE_SPEECH_INPUT -> if (resultCode == Activity.RESULT_OK && null != data) {
                 val result: ArrayList<String> = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) as ArrayList<String>
-                binding.tvSpeech.setText(result.get(0))
+                val text = result.get(0)
+                binding.tvSpeech.setText(text)
+                Log.d("TAG",result.get(0))
 
+                //puch the result to result fragment
                 val bundle = Bundle()
-                bundle.putString("Results", equation(result.get(0)))
-                val fragment = ResultFragment()
-                fragment.arguments = bundle
-                fragmentManager?.beginTransaction()?.replace(R.id.main_nav_container, fragment)?.commit()
+                bundle.putString("Results", equation(text))
+                navController.navigate(R.id.action_micFragment_to_resultFragment, bundle)
             }
         }
     }
 
     fun equation(eq: String) : String {
-        val regex = """(\d+.?\d+)(\+|-|x|×|÷|/)(\d+.?\d+)""".toRegex()
+        val regex = """(\d+.?\d+|\d+)(\+|-|x|×|÷|/)(\d+.?\d+|\d+)""".toRegex()
         val (d1, d2, d3) = regex.find(eq)!!.destructured
         var result : Double = 0.0
         if(d2 == "+") {
