@@ -74,8 +74,33 @@ class MicFragment : Fragment() {
             REQ_CODE_SPEECH_INPUT -> if (resultCode == Activity.RESULT_OK && null != data) {
                 val result: ArrayList<String> = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) as ArrayList<String>
                 binding.tvSpeech.setText(result.get(0))
+
+                val bundle = Bundle()
+                bundle.putString("Results", equation(result.get(0)))
+                val fragment = ResultFragment()
+                fragment.arguments = bundle
+                fragmentManager?.beginTransaction()?.replace(R.id.main_nav_container, fragment)?.commit()
             }
         }
+    }
+
+    fun equation(eq: String) : String {
+        val regex = """(\d+.?\d+)(\+|-|x|×|÷|/)(\d+.?\d+)""".toRegex()
+        val (d1, d2, d3) = regex.find(eq)!!.destructured
+        var result : Double = 0.0
+        if(d2 == "+") {
+            result = d1.toDouble() + d3.toDouble()
+        }
+        else if(d2 == "-"){
+            result = d1.toDouble() - d3.toDouble()
+        }
+        else if(d2 == "×" || d2 == "x"){
+            result = d1.toDouble() * d3.toDouble()
+        }
+        else if(d2 == "/" || d2 == "÷" && d3!= "0"){
+            result = d1.toDouble() / d3.toDouble()
+        }
+        return "Equation : $d1 $d2 $d3 = $result"
     }
 
     override fun onDestroyView() {

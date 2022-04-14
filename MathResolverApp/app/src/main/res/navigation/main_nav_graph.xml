@@ -36,6 +36,10 @@
         android:id="@+id/micFragment"
         android:name="me.otmane.mathresolver.ui.Fragments.MicFragment"
         android:label="mic_fragment"
-        tools:layout="@layout/mic_fragment" />
+        tools:layout="@layout/mic_fragment" >
+        <action
+            android:id="@+id/action_micFragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
 
 </navigation>

@@ -12,15 +12,16 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_height="wrap_content">
+
         <TextView
+            android:id="@+id/tvSpeech"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/btnSpeech"
+            android:layout_centerInParent="true"
             android:layout_marginRight="15dp"
-            android:padding="10dp"
+            android:layout_toLeftOf="@id/btnSpeech"
             android:hint="Tap to Speak"
-            android:id="@+id/tvSpeech"
-            android:layout_centerInParent="true" />
+            android:padding="10dp" />
         <ImageButton
             android:layout_width="40dp"
             android:layout_height="40dp"

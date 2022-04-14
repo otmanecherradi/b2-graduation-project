@@ -154,7 +154,8 @@ class CameraFragment : Fragment() {
             .addOnSuccessListener { visionText ->
                // processTextBlock(visionText)
                 val text = visionText.text
-               // equation(text)
+
+                // equation(text)
                 val bundle = Bundle()
                 bundle.putString("Results", equation(text))
                 val fragment = ResultFragment()
