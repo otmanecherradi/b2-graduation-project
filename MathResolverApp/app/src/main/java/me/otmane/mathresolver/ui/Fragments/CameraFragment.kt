@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.math.sqrt
 
 
 class CameraFragment : Fragment() {
@@ -157,7 +158,7 @@ class CameraFragment : Fragment() {
 
                 // equation(text)
                 val bundle = Bundle()
-                bundle.putString("Results", equation(text))
+                bundle.putString("Results", equation2D(text))
                 val fragment = ResultFragment()
                 fragment.arguments = bundle
                 fragmentManager?.beginTransaction()?.replace(R.id.main_nav_container, fragment)?.commit()
@@ -186,6 +187,77 @@ class CameraFragment : Fragment() {
         }
         return "Equation : $d1 $d2 $d3 = $result"
     }
+
+    //--------------------------------------------------------------------
+    /*  FIRST DGREE
+
+
+
+    fun equation1D(eq : String) : String{
+    val regex = """(\d+.?\d+|\d+)x(\+|-)(\d+.?\d+|\d+)=0""".toRegex()
+    val (d1, d2, d3)= regex.find(eq.replace(" ",""))!!.destructured
+    var result : Double = 0.0
+    if(d2 == "+") {
+            result = -d3.toDouble() / d1.toDouble()
+        }
+        else{
+            result = d3.toDouble() / d1.toDouble()
+        }
+        return "Equation : x = $result"
+    }
+
+ */
+    // SECOND DEGREE
+
+
+    fun equation2D(eq : String) : String {
+        val regex = """(\d+.?\d+|\d+)x2(\+|-)(\d+.?\d+|\d+)x(\+|-)(\d+.?\d+|\d+)=0""".toRegex()
+        val (A, op1, B, op2, C) = regex.find(eq.replace(" ", ""))!!.destructured
+        var result1: Double = 0.0
+        var result2: Double = 0.0
+        var delta: Double = 0.0
+        if (op1 == "+" && op2 == "+") {
+            delta = (B.toDouble() * B.toDouble()) - 4 * A.toDouble() * C.toDouble()
+            if (delta > 0) {
+                result1 = (-B.toDouble() + sqrt(delta)) / 2 * A.toDouble()
+                result2 = (-B.toDouble() - sqrt(delta)) / 2 * A.toDouble()
+            }
+        } else if (op1 == "+" && op2 == "-") {
+            delta = (B.toDouble() * B.toDouble()) + 4 * A.toDouble() * C.toDouble()
+
+            if (delta > 0) {
+                result1 = (-B.toDouble() + sqrt(delta)) / 2 * A.toDouble()
+                result2 = (-B.toDouble() - sqrt(delta)) / 2 * A.toDouble()
+            }
+        } else if (op1 == "-" && op2 == "+") {
+            delta = (B.toDouble() * B.toDouble()) - 4 * A.toDouble() * C.toDouble()
+
+            if (delta > 0) {
+                result1 = (B.toDouble() + sqrt(delta)) / 2 * A.toDouble()
+                result2 = (B.toDouble() - sqrt(delta)) / 2 * A.toDouble()
+            }
+        } else if (op1 == "-" && op2 == "-") {
+            delta = (B.toDouble() * B.toDouble()) + 4 * A.toDouble() * C.toDouble()
+
+            if (delta > 0) {
+                result1 = (B.toDouble() + sqrt(delta)) / 2 * A.toDouble()
+                result2 = (B.toDouble() - sqrt(delta)) / 2 * A.toDouble()
+            }
+        }
+        if (delta > 0) {
+            return "Equation : $eq . X1 =  $result1  & X2 = $result2"
+        } else if (delta == 0.0) {
+            result1 = -B.toDouble() / 2 * A.toDouble()
+            return "Equation : $eq . X1 =  $result1 ."
+        }
+        else{
+            return "The equation has no solotion."
+        }
+    }
+
+
+
+    //-------------------------------------------------------------------------
 
     private fun processTextBlock(result: Text) {
         val resultText = result.text
