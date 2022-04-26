@@ -19,6 +19,7 @@ import me.otmane.mathresolver.databinding.CameraFragmentBinding
 import me.otmane.mathresolver.databinding.MicFragmentBinding
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.sqrt
 
 
 class MicFragment : Fragment() {
@@ -85,7 +86,7 @@ class MicFragment : Fragment() {
 
                 //puch the result to result fragment
                 val bundle = Bundle()
-                bundle.putString("Results", equation(text))
+                bundle.putString("Results", equation2D(text))
                 navController.navigate(R.id.action_micFragment_to_resultFragment, bundle)
             }
         }
@@ -93,7 +94,7 @@ class MicFragment : Fragment() {
 
     fun equation(eq: String) : String {
         val regex = """(\d+.?\d+|\d+)(\+|-|x|×|÷|/)(\d+.?\d+|\d+)""".toRegex()
-        val (d1, d2, d3) = regex.find(eq)!!.destructured
+        val (d1, d2, d3)= regex.find(eq.replace(" ",""))!!.destructured
         var result : Double = 0.0
         if(d2 == "+") {
             result = d1.toDouble() + d3.toDouble()
@@ -109,6 +110,79 @@ class MicFragment : Fragment() {
         }
         return "Equation : $d1 $d2 $d3 = $result"
     }
+
+    //--------------------------------------------------------------------
+    // FIRST DGREE
+
+
+
+    fun equation1D(eq : String) : String{
+    val regex = """(\d+.?\d+|\d+)x(\+|-)(\d+.?\d+|\d+)=0""".toRegex()
+    var (d1, d2, d3)= regex.find(eq.replace(" ","").replace("moins","-"))!!.destructured
+    var result : Double = 0.0
+    if(d2 == "+") {
+            result = -d3.toDouble() / d1.toDouble()
+        }
+        else{
+            result = d3.toDouble() / d1.toDouble()
+        }
+        return "Equation : x = $result"
+    }
+
+
+    // SECOND DEGREE
+
+
+    fun equation2D(eq : String) : String {
+        val regex = """(\d+.?\d+|\d+)x\^2(\+|-)(\d+.?\d+|\d+)x(\+|-)(\d+.?\d+|\d+)=0""".toRegex()
+        val (A, op1, B, op2, C) = regex.find(eq.replace(" " , "").replace("moins","-"))!!.destructured
+        val neweq = eq.replace(" " , "").replace("moins","-").replace("x^2","x²")
+        var result1: Double = 0.0
+        var result2: Double = 0.0
+        var delta: Double = 0.0
+        if (op1 == "+" && op2 == "+") {
+            delta = (B.toDouble() * B.toDouble()) - 4 * A.toDouble() * C.toDouble()
+            if (delta > 0) {
+                result1 = (-B.toDouble() + sqrt(delta)) / 2 * A.toDouble()
+                result2 = (-B.toDouble() - sqrt(delta)) / 2 * A.toDouble()
+            }
+        } else if (op1 == "+" && op2 == "-") {
+            delta = (B.toDouble() * B.toDouble()) + 4 * A.toDouble() * C.toDouble()
+
+            if (delta > 0) {
+                result1 = (-B.toDouble() + sqrt(delta)) / 2 * A.toDouble()
+                result2 = (-B.toDouble() - sqrt(delta)) / 2 * A.toDouble()
+            }
+        } else if (op1 == "-" && op2 == "+") {
+            delta = (B.toDouble() * B.toDouble()) - 4 * A.toDouble() * C.toDouble()
+
+            if (delta > 0) {
+                result1 = (B.toDouble() + sqrt(delta)) / 2 * A.toDouble()
+                result2 = (B.toDouble() - sqrt(delta)) / 2 * A.toDouble()
+            }
+        } else if (op1 == "-" && op2 == "-") {
+            delta = (B.toDouble() * B.toDouble()) + 4 * A.toDouble() * C.toDouble()
+
+            if (delta > 0) {
+                result1 = (B.toDouble() + sqrt(delta)) / 2 * A.toDouble()
+                result2 = (B.toDouble() - sqrt(delta)) / 2 * A.toDouble()
+            }
+        }
+        if (delta > 0) {
+            return "Equation : $neweq . X1 =  $result1  & X2 = $result2"
+        } else if (delta == 0.0) {
+            result1 = -B.toDouble() / 2 * A.toDouble()
+            return "Equation : $eq . X1 =  $result1 ."
+        }
+        else{
+            return "The equation has no solotion."
+        }
+    }
+
+
+
+    //--------------------------------------------------------------------
+
 
     override fun onDestroyView() {
         super.onDestroyView()

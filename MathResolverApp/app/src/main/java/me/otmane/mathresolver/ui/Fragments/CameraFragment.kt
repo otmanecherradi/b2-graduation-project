@@ -211,7 +211,7 @@ class CameraFragment : Fragment() {
 
 
     fun equation2D(eq : String) : String {
-        val regex = """(\d+.?\d+|\d+)x2(\+|-)(\d+.?\d+|\d+)x(\+|-)(\d+.?\d+|\d+)=0""".toRegex()
+        val regex = """(\d+.?\d+|\d+)x[2|\^2](\+|-)(\d+.?\d+|\d+)x(\+|-)(\d+.?\d+|\d+)=0""".toRegex()
         val (A, op1, B, op2, C) = regex.find(eq.replace(" ", ""))!!.destructured
         var result1: Double = 0.0
         var result2: Double = 0.0
