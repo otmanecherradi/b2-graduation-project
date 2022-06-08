@@ -1,10 +1,11 @@
-package me.otmane.mathresolver
+package me.otmane.mathresolver.adapters
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
+import me.otmane.mathresolver.R
 import me.otmane.mathresolver.databinding.ElementEquationBinding
 import me.otmane.mathresolver.models.Equation
 import me.otmane.mathresolver.ui.result.ResultFragment

@@ -44,7 +44,6 @@ class ResultFragment : Fragment() {
 
         Log.d(TAG, "onViewCreated: $equation")
 
-
     }
 
     companion object {

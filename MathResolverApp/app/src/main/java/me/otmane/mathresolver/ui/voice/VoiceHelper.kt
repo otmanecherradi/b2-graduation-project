@@ -53,21 +53,10 @@ class VoiceHelper(
 
         speechRecognizer.setRecognitionListener(getSpeechRecognitionListener(onResult, onError))
 
-        imageButton.setOnTouchListener { view, motionEvent ->
-            when (motionEvent.action) {
-                MotionEvent.ACTION_UP -> {
-                    loading.visibility = View.GONE
-                    speechRecognizer.stopListening()
-                }
-                MotionEvent.ACTION_DOWN -> {
-                    loading.visibility = View.VISIBLE
-                    speechRecognizer.startListening(speechRecognizerIntent)
-                }
-            }
-            false
+        imageButton.setOnClickListener {
+            speechRecognizer.startListening(speechRecognizerIntent)
         }
     }
-
 
     private fun getSpeechRecognitionListener(
         onResult: (result: String) -> Unit,
@@ -75,20 +64,22 @@ class VoiceHelper(
     ): SpeechRecognitionListener {
         return SpeechRecognitionListener(
             onResult,
-            onError
+            onError,
+            loading
         )
     }
 
     private class SpeechRecognitionListener(
         private val onResult: (result: String) -> Unit,
         private val onErr: (e: Int) -> Unit,
+        private val loading: CircularProgressIndicator,
     ) : RecognitionListener {
         override fun onReadyForSpeech(p0: Bundle?) {
             TODO("Not yet implemented")
         }
 
         override fun onBeginningOfSpeech() {
-            TODO("Not yet implemented")
+            loading.visibility = View.VISIBLE
         }
 
         override fun onRmsChanged(p0: Float) {
@@ -108,6 +99,8 @@ class VoiceHelper(
         }
 
         override fun onResults(bundle: Bundle?) {
+            loading.visibility = View.GONE
+
             val data = bundle!!.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
             onResult(data!![0])
         }

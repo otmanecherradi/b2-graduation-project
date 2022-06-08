@@ -12,7 +12,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import me.otmane.mathresolver.EquationAdapter
+import me.otmane.mathresolver.adapters.EquationAdapter
 import me.otmane.mathresolver.databinding.FragmentHomeBinding
 import me.otmane.mathresolver.models.Equation
 import me.otmane.mathresolver.repositories.EquationsRepository
