@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import me.otmane.mathresolver.databinding.FragmentResultBinding
+import me.otmane.mathresolver.models.Equation
 import me.otmane.mathresolver.repositories.EquationsRepository
 import org.bson.types.ObjectId
 
@@ -17,13 +18,13 @@ class ResultFragment : Fragment() {
     private lateinit var binding: FragmentResultBinding
     private lateinit var navController: NavController
 
-    private lateinit var equationId: ObjectId
+    private lateinit var equation: Equation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (arguments != null) {
-            equationId = requireArguments().getSerializable(EQUATION_ID_ARG) as ObjectId
+            equation = requireArguments().getSerializable(EQUATION_ARG) as Equation
         }
     }
 
@@ -40,16 +41,14 @@ class ResultFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val equation = EquationsRepository.get(equationId)
-
-        Log.d(TAG, "onViewCreated: ${equation?.size}")
+        Log.d(TAG, "onViewCreated: $equation")
 
     }
 
     companion object {
         const val TAG = "ResultFragment"
 
-        const val EQUATION_ID_ARG = "EQUATION_ID";
+        const val EQUATION_ARG = "EQUATION";
 
         // private const val GOTO_CAMERA_FRAGMENT = R.id.action_main_fragment_to_camera_fragment
     }

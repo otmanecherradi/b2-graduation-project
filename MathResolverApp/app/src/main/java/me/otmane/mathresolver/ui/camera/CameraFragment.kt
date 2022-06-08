@@ -68,7 +68,7 @@ class CameraFragment : Fragment() {
 
             EquationsRepository.add(eq)
 
-            b.putSerializable(ResultFragment.EQUATION_ID_ARG, eq.id);
+            b.putSerializable(ResultFragment.EQUATION_ARG, eq)
 
             navController.navigate(R.id.action_navigationScan_to_navigationResult, b)
         }

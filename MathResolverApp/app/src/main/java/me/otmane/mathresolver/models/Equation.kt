@@ -1,5 +1,7 @@
 package me.otmane.mathresolver.models
 
+import android.os.Parcel
+import android.os.Parcelable
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.Required
@@ -12,7 +14,7 @@ enum class EquationType(val displayName: String) {
 }
 
 
-open class Equation() : RealmObject() {
+open class Equation() : RealmObject(), java.io.Serializable {
     @PrimaryKey
     private var _id = ObjectId()
     val id get() = _id
