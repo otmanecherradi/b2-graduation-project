@@ -20,9 +20,9 @@ class EquationsRepository {
             return realm.where(Equation::class.java).findAllAsync()
         }
 
-        fun get(id: ObjectId): Equation? {
+        fun get(id: ObjectId): RealmResults<Equation>? {
             return realm.where(Equation::class.java).equalTo("_id", id)
-                .findFirstAsync()
+                .findAllAsync()
         }
 
         fun onClear() {

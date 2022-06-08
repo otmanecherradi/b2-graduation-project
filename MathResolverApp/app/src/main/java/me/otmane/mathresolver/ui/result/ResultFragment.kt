@@ -42,7 +42,7 @@ class ResultFragment : Fragment() {
 
         val equation = EquationsRepository.get(equationId)
 
-        Log.d(TAG, "onViewCreated: $equation")
+        Log.d(TAG, "onViewCreated: ${equation?.size}")
 
     }
 

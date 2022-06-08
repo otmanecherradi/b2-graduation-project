@@ -63,7 +63,7 @@ class VoiceFragment : Fragment() {
 
             b.putSerializable(ResultFragment.EQUATION_ID_ARG, eq.id)
 
-            navController.navigate(R.id.action_navigationScan_to_navigationResult, b)
+            navController.navigate(R.id.action_navigationVoice_to_navigationResult, b)
         }
     }
 
