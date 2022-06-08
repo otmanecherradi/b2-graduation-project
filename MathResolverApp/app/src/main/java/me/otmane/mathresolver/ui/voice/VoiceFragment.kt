@@ -9,7 +9,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import me.otmane.mathresolver.R
+import me.otmane.mathresolver.core.Process
 import me.otmane.mathresolver.databinding.FragmentMicBinding
+import me.otmane.mathresolver.repositories.EquationsRepository
+import me.otmane.mathresolver.ui.result.ResultFragment
 
 
 class VoiceFragment : Fragment() {
@@ -47,6 +51,20 @@ class VoiceFragment : Fragment() {
         Log.d(TAG, "Result is $result")
 
         Toast.makeText(context, "Result is $result", Toast.LENGTH_SHORT).show()
+
+        val type = Process.getEquationType(result)
+
+        if (type != null) {
+            val b = Bundle()
+
+            val eq = Process.getEquation(result, type)
+
+            EquationsRepository.add(eq)
+
+            b.putSerializable(ResultFragment.EQUATION_ID_ARG, eq.id)
+
+            navController.navigate(R.id.action_navigationScan_to_navigationResult, b)
+        }
     }
 
     private fun onError(e: Int) {

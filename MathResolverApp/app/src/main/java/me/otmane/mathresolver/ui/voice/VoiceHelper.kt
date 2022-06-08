@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
@@ -44,16 +43,16 @@ class VoiceHelper(
 
     @SuppressLint("ClickableViewAccessibility")
     private fun startMic() {
-        val speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        speechRecognizerIntent.putExtra(
-            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-        );
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-
-        speechRecognizer.setRecognitionListener(getSpeechRecognitionListener(onResult, onError))
-
         imageButton.setOnClickListener {
+            val speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            speechRecognizerIntent.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            );
+            speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+            speechRecognizer.setRecognitionListener(getSpeechRecognitionListener(onResult, onError))
+
             speechRecognizer.startListening(speechRecognizerIntent)
         }
     }
@@ -75,23 +74,19 @@ class VoiceHelper(
         private val loading: CircularProgressIndicator,
     ) : RecognitionListener {
         override fun onReadyForSpeech(p0: Bundle?) {
-            TODO("Not yet implemented")
-        }
-
-        override fun onBeginningOfSpeech() {
             loading.visibility = View.VISIBLE
         }
 
+        override fun onBeginningOfSpeech() {
+        }
+
         override fun onRmsChanged(p0: Float) {
-            TODO("Not yet implemented")
         }
 
         override fun onBufferReceived(p0: ByteArray?) {
-            TODO("Not yet implemented")
         }
 
         override fun onEndOfSpeech() {
-            TODO("Not yet implemented")
         }
 
         override fun onError(error: Int) {
@@ -106,11 +101,9 @@ class VoiceHelper(
         }
 
         override fun onPartialResults(p0: Bundle?) {
-            TODO("Not yet implemented")
         }
 
         override fun onEvent(p0: Int, p1: Bundle?) {
-            TODO("Not yet implemented")
         }
     }
 

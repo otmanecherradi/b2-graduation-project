@@ -14,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment
 import me.otmane.mathresolver.R
 import me.otmane.mathresolver.core.Process
 import me.otmane.mathresolver.databinding.FragmentCameraBinding
+import me.otmane.mathresolver.repositories.EquationsRepository
 import me.otmane.mathresolver.ui.result.ResultFragment
 import java.io.File
 import java.text.SimpleDateFormat
@@ -64,6 +65,8 @@ class CameraFragment : Fragment() {
             val b = Bundle()
 
             val eq = Process.getEquation(result, type)
+
+            EquationsRepository.add(eq)
 
             b.putSerializable(ResultFragment.EQUATION_ID_ARG, eq.id);
 
