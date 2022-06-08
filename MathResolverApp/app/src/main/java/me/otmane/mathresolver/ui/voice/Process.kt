@@ -1,4 +1,4 @@
-package me.otmane.mathresolver.ui.main
+package me.otmane.mathresolver.ui.voice
 
 class Process {
 

@@ -1,7 +1,6 @@
 package me.otmane.mathresolver.ui.camera
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -9,27 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.Text
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import me.otmane.mathresolver.MainActivity
 import me.otmane.mathresolver.databinding.CameraFragmentBinding
 import java.io.File
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 
 class CameraFragment : Fragment() {
@@ -38,9 +24,7 @@ class CameraFragment : Fragment() {
 
     private lateinit var navController: NavController
 
-    private lateinit var cameraExecutor: ExecutorService
-    private var imageCapture: ImageCapture? = null
-    private lateinit var outputDirectory: File
+    private lateinit var cameraHelper: CameraHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,150 +39,165 @@ class CameraFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (allPermissionsGranted()) {
-            startCamera()
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-            )
-        }
 
-        cameraExecutor = Executors.newSingleThreadExecutor()
-
-        outputDirectory = MainActivity.getOutputDirectory(requireContext())
-
-        binding.takePictureBtn.setOnClickListener {
-            takePhoto()
-        }
-    }
-
-    private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
-
-        cameraProviderFuture.addListener({
-            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(binding.cameraPreview.surfaceProvider)
-                }
-
-            imageCapture = ImageCapture.Builder().build()
-
-            try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageCapture
-                )
-            } catch (exc: Exception) {
-                Log.e(TAG, "Use case binding failed", exc)
-            }
-        }, ContextCompat.getMainExecutor(requireContext()))
-    }
-
-    private fun takePhoto() {
-        val imageCapture = imageCapture ?: return
-
-        val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
-
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
-            .build()
-
-        imageCapture.takePicture(
-            outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-                }
-
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Log.d(TAG, msg)
-
-                    val image = InputImage.fromFilePath(requireContext(), output.savedUri!!)
-
-                    recognizeText(image)
-
-                }
-            }
+        cameraHelper = CameraHelper(
+            owner = requireActivity(),
+            context = requireActivity().applicationContext,
+            viewFinder = binding.cameraPreview,
+            onResult = ::onResult,
+            onError = ::onError,
         )
+
+        cameraHelper.start()
     }
 
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+    private fun onResult(result: String) {
+        Log.d(TAG, "Result is $result")
+
+        Toast.makeText(context, "Result is $result", Toast.LENGTH_SHORT).show()
     }
 
-    @Deprecated("Deprecated in Java")
+    private fun onError(e: Exception) {
+        Log.d(TAG, "Error is ${e.message}")
+
+        Toast.makeText(context, "Error is ${e.message}", Toast.LENGTH_SHORT).show()
+    }
+
     override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults:
-        IntArray
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-                startCamera()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT
-                ).show()
-                navController.navigateUp()
-            }
-        }
+        cameraHelper.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun recognizeText(image: InputImage) {
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-
-        val result = recognizer.process(image)
-            .addOnSuccessListener { visionText ->
-                processTextBlock(visionText)
-            }
-            .addOnFailureListener { e ->
-                Log.e(TAG, e.toString())
-                Toast.makeText(requireActivity(), e.toString(), Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun processTextBlock(result: Text) {
-        val resultText = result.text
-        Log.d(TAG, "resultText $resultText")
-        Toast.makeText(requireActivity(), "resultText $resultText", Toast.LENGTH_SHORT).show()
-
-        for (block in result.textBlocks) {
-            val blockText = block.text
-            val blockCornerPoints = block.cornerPoints
-            val blockFrame = block.boundingBox
-
-            Log.d(TAG, "blockText $blockText")
-            Log.d(TAG, "blockCornerPoints ${blockCornerPoints.toString()}")
-            Log.d(TAG, "blockFrame ${blockFrame.toString()}")
-
-            Toast.makeText(requireActivity(), "blockText $blockText", Toast.LENGTH_SHORT).show()
-            Toast.makeText(requireActivity(), "blockCornerPoints ${blockCornerPoints.toString()}", Toast.LENGTH_SHORT).show()
-            Toast.makeText(requireActivity(), "blockFrame ${blockFrame.toString()}", Toast.LENGTH_SHORT).show()
-
-//            for (line in block.lines) {
-//                val lineText = line.text
-//                val lineCornerPoints = line.cornerPoints
-//                val lineFrame = line.boundingBox
+//    private fun startCamera() {
+//        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 //
-//                for (element in line.elements) {
-//                    val elementText = element.text
-//                    val elementCornerPoints = element.cornerPoints
-//                    val elementFrame = element.boundingBox
+//        cameraProviderFuture.addListener({
+//            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+//            val preview = Preview.Builder()
+//                .build()
+//                .also {
+//                    it.setSurfaceProvider(binding.cameraPreview.surfaceProvider)
+//                }
 //
-//                    Log.d(TAG, elementText)
-//                    Log.d(TAG, elementCornerPoints.toString())
-//                    Log.d(TAG, elementFrame.toString())
+//            imageCapture = ImageCapture.Builder().build()
+//
+//            try {
+//                cameraProvider.unbindAll()
+//                cameraProvider.bindToLifecycle(
+//                    this, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageCapture
+//                )
+//            } catch (exc: Exception) {
+//                Log.e(TAG, "Use case binding failed", exc)
+//            }
+//        }, ContextCompat.getMainExecutor(requireContext()))
+//    }
+//
+//    private fun takePhoto() {
+//        val imageCapture = imageCapture ?: return
+//
+//        val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
+//
+//        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
+//            .build()
+//
+//        imageCapture.takePicture(
+//            outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
+//                override fun onError(exc: ImageCaptureException) {
+//                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+//                }
+//
+//                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+//                    val msg = "Photo capture succeeded: ${output.savedUri}"
+//                    Log.d(TAG, msg)
+//
+//                    val image = InputImage.fromFilePath(requireContext(), output.savedUri!!)
+//
+//                    recognizeText(image)
+//
 //                }
 //            }
-        }
-    }
+//        )
+//    }
+//
+//    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+//        ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+//    }
+//
+//    @Deprecated("Deprecated in Java")
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int, permissions: Array<String>, grantResults:
+//        IntArray
+//    ) {
+//        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+//            if (allPermissionsGranted()) {
+//                startCamera()
+//            } else {
+//                Toast.makeText(
+//                    requireContext(),
+//                    "Permissions not granted by the user.",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//                navController.navigateUp()
+//            }
+//        }
+//    }
+//
+//    private fun recognizeText(image: InputImage) {
+//        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+//
+//        val result = recognizer.process(image)
+//            .addOnSuccessListener { visionText ->
+//                processTextBlock(visionText)
+//            }
+//            .addOnFailureListener { e ->
+//                Log.e(TAG, e.toString())
+//                Toast.makeText(requireActivity(), e.toString(), Toast.LENGTH_SHORT).show()
+//            }
+//    }
+//
+//    private fun processTextBlock(result: Text) {
+//        val resultText = result.text
+//        Log.d(TAG, "resultText $resultText")
+//        Toast.makeText(requireActivity(), "resultText $resultText", Toast.LENGTH_SHORT).show()
+//
+//        for (block in result.textBlocks) {
+//            val blockText = block.text
+//            val blockCornerPoints = block.cornerPoints
+//            val blockFrame = block.boundingBox
+//
+//            Log.d(TAG, "blockText $blockText")
+//            Log.d(TAG, "blockCornerPoints ${blockCornerPoints.toString()}")
+//            Log.d(TAG, "blockFrame ${blockFrame.toString()}")
+//
+//            Toast.makeText(requireActivity(), "blockText $blockText", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireActivity(), "blockCornerPoints ${blockCornerPoints.toString()}", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireActivity(), "blockFrame ${blockFrame.toString()}", Toast.LENGTH_SHORT).show()
+//
+////            for (line in block.lines) {
+////                val lineText = line.text
+////                val lineCornerPoints = line.cornerPoints
+////                val lineFrame = line.boundingBox
+////
+////                for (element in line.elements) {
+////                    val elementText = element.text
+////                    val elementCornerPoints = element.cornerPoints
+////                    val elementFrame = element.boundingBox
+////
+////                    Log.d(TAG, elementText)
+////                    Log.d(TAG, elementCornerPoints.toString())
+////                    Log.d(TAG, elementFrame.toString())
+////                }
+////            }
+//        }
+//    }
 
 
     override fun onDestroyView() {
         super.onDestroyView()
-        cameraExecutor.shutdown()
+//        cameraExecutor.shutdown()
 
         _binding = null
     }
