@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import me.otmane.mathresolver.core.Process
 import me.otmane.mathresolver.databinding.FragmentResultBinding
 import me.otmane.mathresolver.models.Equation
 import me.otmane.mathresolver.repositories.EquationsRepository
@@ -42,6 +43,9 @@ class ResultFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         Log.d(TAG, "onViewCreated: $equation")
+
+        binding.equation.text = equation.text
+        binding.result.text = Process.calculateResult(equation)
 
     }
 

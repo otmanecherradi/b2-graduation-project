@@ -46,7 +46,7 @@ class Process {
         }
 
         fun calculateResult(equation: Equation): String {
-            var result: Double = 0.0
+            var result = 0.0
 
             if (equation.typeEnum == EquationType.Simple) {
                 val equationText = cleanString(equation.text)
