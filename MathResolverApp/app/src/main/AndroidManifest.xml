@@ -5,6 +5,8 @@
     <uses-feature android:name="android.hardware.camera.any" />
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".MainApplication"
@@ -17,8 +19,8 @@
 
         <activity
             android:name=".ui.SplashScreenActivity"
-            android:theme="@style/Theme.MathResolver.SplashScreen"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.MathResolver.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

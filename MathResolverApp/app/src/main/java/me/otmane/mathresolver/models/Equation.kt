@@ -3,7 +3,7 @@ package me.otmane.mathresolver.models
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.Required
-import java.util.*
+import org.bson.types.ObjectId
 
 enum class EquationType(val displayName: String) {
     Simple("Simple"),
@@ -14,7 +14,8 @@ enum class EquationType(val displayName: String) {
 
 open class Equation() : RealmObject() {
     @PrimaryKey
-    var id: UUID = UUID.randomUUID()
+    private var _id = ObjectId()
+    val id get() = _id
 
     @Required
     var type: String = EquationType.Simple.name
@@ -31,4 +32,7 @@ open class Equation() : RealmObject() {
         set(value) {
             type = value.name
         }
+
+    @Required
+    var text: String = ""
 }

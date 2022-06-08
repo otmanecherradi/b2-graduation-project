@@ -11,15 +11,17 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import me.otmane.mathresolver.databinding.CameraFragmentBinding
+import me.otmane.mathresolver.R
+import me.otmane.mathresolver.core.Process
+import me.otmane.mathresolver.databinding.FragmentCameraBinding
+import me.otmane.mathresolver.ui.result.ResultFragment
 import java.io.File
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class CameraFragment : Fragment() {
-    private var _binding: CameraFragmentBinding? = null
+    private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var navController: NavController
@@ -30,7 +32,7 @@ class CameraFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = CameraFragmentBinding.inflate(inflater, container, false)
+        _binding = FragmentCameraBinding.inflate(inflater, container, false)
         navController = NavHostFragment.findNavController(this);
 
         return binding.root
@@ -55,6 +57,18 @@ class CameraFragment : Fragment() {
         Log.d(TAG, "Result is $result")
 
         Toast.makeText(context, "Result is $result", Toast.LENGTH_SHORT).show()
+
+        val type = Process.getEquationType(result)
+
+        if (type != null) {
+            val b = Bundle()
+
+            val eq = Process.getEquation(result, type)
+
+            b.putSerializable(ResultFragment.EQUATION_ID_ARG, eq.id);
+
+            navController.navigate(R.id.action_navigationScan_to_navigationResult, b)
+        }
     }
 
     private fun onError(e: Exception) {
@@ -197,9 +211,9 @@ class CameraFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-//        cameraExecutor.shutdown()
 
         _binding = null
+        cameraHelper.stop()
     }
 
     companion object {

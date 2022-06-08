@@ -9,19 +9,35 @@
         android:id="@+id/navigationHome"
         android:name="me.otmane.mathresolver.ui.home.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigationHome_to_navigationResult"
+            app:destination="@id/navigationResult" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigationScan"
         android:name="me.otmane.mathresolver.ui.camera.CameraFragment"
         android:label="Camera"
-        tools:layout="@layout/camera_fragment" />
-
+        tools:layout="@layout/fragment_camera" >
+        <action
+            android:id="@+id/action_navigationScan_to_navigationResult"
+            app:destination="@id/navigationResult" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigationVoice"
         android:name="me.otmane.mathresolver.ui.voice.VoiceFragment"
         android:label="Voice"
-        tools:layout="@layout/camera_fragment" />
+        tools:layout="@layout/fragment_mic" >
+        <action
+            android:id="@+id/action_navigationVoice_to_navigationResult"
+            app:destination="@id/navigationResult" />
+    </fragment>
 
+    <fragment
+        android:id="@+id/navigationResult"
+        android:name="me.otmane.mathresolver.ui.result.ResultFragment"
+        android:label="Result"
+        tools:layout="@layout/fragment_result" />
 </navigation>

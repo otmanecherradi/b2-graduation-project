@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.*
@@ -18,8 +17,6 @@ import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.math.abs
-import kotlin.math.max
 
 class CameraHelper(
     private val owner: FragmentActivity,
@@ -82,21 +79,9 @@ class CameraHelper(
         }
     }
 
-    private fun aspectRatio(): Int {
-        with(DisplayMetrics().also { viewFinder.display.getRealMetrics(it) }) {
-            val previewRatio = max(widthPixels, heightPixels).toDouble() / widthPixels.coerceAtMost(
-                heightPixels
-            )
-            if (abs(previewRatio - RATIO_4_3_VALUE) <= abs(previewRatio - RATIO_16_9_VALUE)) {
-                return AspectRatio.RATIO_4_3
-            }
-            return AspectRatio.RATIO_16_9
-        }
-    }
-
     private fun getPreviewUseCase(): Preview {
         return Preview.Builder()
-            .setTargetAspectRatio(aspectRatio())
+            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .setTargetRotation(viewFinder.display.rotation)
             .build()
     }
@@ -106,7 +91,7 @@ class CameraHelper(
         onError: (e: Exception) -> Unit
     ): ImageAnalysis {
         val analyzer = ImageAnalysis.Builder()
-            .setTargetAspectRatio(aspectRatio())
+            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .setTargetRotation(viewFinder.display.rotation)
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .setImageQueueDepth(10)
@@ -180,8 +165,6 @@ class CameraHelper(
     companion object {
         const val REQUEST_CODE_PERMISSIONS = 42
         val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
-        private const val RATIO_4_3_VALUE = 4.0 / 3.0
-        private const val RATIO_16_9_VALUE = 16.0 / 9.0
     }
 
 }
