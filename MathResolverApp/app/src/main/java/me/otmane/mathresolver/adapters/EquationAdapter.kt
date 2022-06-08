@@ -47,7 +47,7 @@ class EquationAdapter(
         fun addListeners(equation: Equation) {
             binding.root.setOnClickListener {
                 val b = Bundle()
-                b.putSerializable(ResultFragment.EQUATION_ID_ARG, equation.id)
+                b.putSerializable(ResultFragment.EQUATION_ARG, equation)
                 navController.navigate(R.id.action_navigationHome_to_navigationResult, b)
             }
         }
