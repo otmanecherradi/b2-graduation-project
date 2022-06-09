@@ -4,14 +4,14 @@ import me.otmane.mathresolver.models.Equation
 import me.otmane.mathresolver.models.EquationType
 
 val simpleEquationRegex = """(\d+.?\d+|\d+)([+\-*x×÷/])(\d+.?\d+|\d+)""".toRegex()
-val firstDegreeEquationRegex = """(\d+.?\d+|\d+)x([+\-])(\d+.?\d+|\d+)=0""".toRegex()
+val firstDegreeEquationRegex = """(\d+.?\d+|\d+)?[xX]([+\-])(\d+.?\d+|\d+)[=-]0""".toRegex()
 val secondDegreeEquationRegex =
     """(\d+.?\d+|\d+)x\^2([+\-])(\d+.?\d+|\d+)x([+\-])(\d+.?\d+|\d+)=0""".toRegex()
 
 class Process {
     companion object {
         private fun cleanString(str: String): String {
-            return str.replace(" ", "").trim()
+            return str.replace(" ", "").lowercase().trim()
         }
 
         fun getEquation(equationText: String, type: EquationType): Equation {
@@ -66,11 +66,19 @@ class Process {
             if (equation.typeEnum == EquationType.FirstDegree) {
                 val equationText = cleanString(equation.text)
                 val (nbr1, operation, nbr2) = firstDegreeEquationRegex.find(equationText)!!.destructured
-
-                when (operation) {
+                if (nbr1!= ""){
+                    when (operation) {
                     "+" -> result = -nbr2.toDouble() / nbr1.toDouble()
-                    "-" -> result = nbr2.toDouble() - nbr1.toDouble()
+                    "-" -> result = nbr2.toDouble() / nbr1.toDouble()
+                    }
+                }else{
+
+                    when (operation) {
+                        "+" -> result = -nbr2.toDouble()
+                        "-" -> result = nbr2.toDouble()
+                    }
                 }
+
             }
 
             if (result == null) {
