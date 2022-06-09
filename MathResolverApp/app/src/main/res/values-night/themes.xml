@@ -1,16 +1,35 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.MathResolver" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+<resources>
+
+    <style name="Theme.MathResolver" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/white</item>
+
+        <item name="colorPrimary">@color/darkGreen</item>
+    </style>
+
+    <style name="Theme.MathResolver.SplashScreen" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+
+        <item name="android:statusBarColor">@color/white</item>
+    </style>
+
+    <style name="Widget.MathResolver.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.MathResolver.BottomNavigationView
+        </item>
+    </style>
+
+    <style name="ThemeOverlay.MathResolver.BottomNavigationView" parent="">
+        <item name="colorPrimary">@color/darkGreen</item>
+
+        <item name="colorSecondaryContainer">@color/green</item>
+
+        <item name="colorSurface">@color/grayBackground</item>
+    </style>
+
+    <style name="Widget.MathResolver.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.MathResolver.Toolbar</item>
+    </style>
+
+    <style name="ThemeOverlay.MathResolver.Toolbar" parent="">
+        <item name="colorSurface">@color/grayBackground</item>
     </style>
 </resources>
