@@ -11,8 +11,6 @@ import androidx.navigation.fragment.NavHostFragment
 import me.otmane.mathresolver.core.Process
 import me.otmane.mathresolver.databinding.FragmentResultBinding
 import me.otmane.mathresolver.models.Equation
-import me.otmane.mathresolver.repositories.EquationsRepository
-import org.bson.types.ObjectId
 
 
 class ResultFragment : Fragment() {
@@ -45,8 +43,12 @@ class ResultFragment : Fragment() {
         Log.d(TAG, "onViewCreated: $equation")
 
         binding.equation.text = equation.text
-        binding.result.text = Process.calculateResult(equation)
-
+        val result = Process.calculateResult(equation)
+        if (result == null) {
+            binding.result.text = "result not found"
+        } else {
+            binding.result.text = result
+        }
     }
 
     companion object {

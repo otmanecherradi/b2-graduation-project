@@ -45,8 +45,8 @@ class Process {
             return type
         }
 
-        fun calculateResult(equation: Equation): String {
-            var result = 0.0
+        fun calculateResult(equation: Equation): String? {
+            var result: Double? = null
 
             if (equation.typeEnum == EquationType.Simple) {
                 val equationText = cleanString(equation.text)
@@ -61,6 +61,20 @@ class Process {
                     "/" -> result = nbr1.toDouble() / nbr2.toDouble()
                     "÷" -> result = nbr1.toDouble() / nbr2.toDouble()
                 }
+            }
+
+            if (equation.typeEnum == EquationType.FirstDegree) {
+                val equationText = cleanString(equation.text)
+                val (nbr1, operation, nbr2) = firstDegreeEquationRegex.find(equationText)!!.destructured
+
+                when (operation) {
+                    "+" -> result = -nbr2.toDouble() / nbr1.toDouble()
+                    "-" -> result = nbr2.toDouble() - nbr1.toDouble()
+                }
+            }
+
+            if (result == null) {
+                return null
             }
             return "$result"
         }
